@@ -1,7 +1,7 @@
 This is a simple benchmark to test if there is any performance benefit for using 1D over 2D textures.
 
 ## Results
-In my computer, I have found that there is a very small differerence. The following table measures seconds
+In my computer, I have found that there is a very small differerence. The following table measures seconds:
 
 |           | 1D      | 2D      |  Ratio  |
 |-----------|---------|---------|---------|
