@@ -24,6 +24,8 @@ cmake ..
 make
 ```
 
+If you are using Windows, and don't want to compile yourself, you can find an .exe in [releases](https://github.com/tuket/opengl_tex1d_benchmark/releases).
+
 Run the generated `tex1d_benchmark` executable.
 
 It will print something like this to the console (stdout):
