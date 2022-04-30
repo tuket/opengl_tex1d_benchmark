@@ -6,8 +6,6 @@ set (CMAKE_CXX_STANDARD 20)
 add_subdirectory(libs/glad)
 add_subdirectory(libs/glfw)
 add_subdirectory(libs/glm)
-add_subdirectory(libs/stb)
-add_subdirectory(libs/imgui)
 
 add_executable(tex1d_benchmark
 	src/main.cpp
@@ -18,6 +16,4 @@ target_link_libraries(tex1d_benchmark
 	glad
 	glfw
 	glm
-	stb
-	imgui
 )
