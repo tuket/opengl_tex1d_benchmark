@@ -93,21 +93,7 @@ int main()
             glfwSetWindowShouldClose(window, true);
     });
 
-    //glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &maxAnisotropic);
     glClearColor(0.4, 0.4, 0.4, 0);
-    //glEnable(GL_DEPTH_TEST);
-    
-    /*u32 fbo;
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    u32 rbo;
-    glGenRenderbuffers(1, & rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB, 1280, 1024);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo);
-    const GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-    glDrawBuffers(1, drawBuffers);
-    assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);*/
 
     u32 vbo;
     u32 vao;
@@ -171,21 +157,23 @@ int main()
 
     double time[2] = { 0, 0 };
 
-    const int initMode = 0; // Toggle if we start with 1D or 2D first. It could happen that the one that executes first is faster because it starts with cooler temps
-    const int numBatches = 40;
-    const int numFramesPerBatch = 2'500;
-    for (int batchInd = initMode; batchInd < numBatches + initMode; batchInd++) {
-        const int mode = batchInd % 2;
-        glUseProgram(prog[mode]);
-        glBindTexture(targets[mode], tex[mode]);
-        const double timeStart = glfwGetTime();
-        for (int i = 0; i < numFramesPerBatch; i++) {
-            glClear(GL_COLOR_BUFFER_BIT);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    const int warmupBatches = 5; // otherwise the one that goes first would have the GPU with lowers temps
+    const int numBatches = 50;
+    const int numFramesPerBatch = 2'000;
+    for (int batchInd = 0; batchInd < numBatches + warmupBatches; batchInd++) {
+        for (int mode = 0; mode < 2; mode++) {
+            glUseProgram(prog[mode]);
+            glBindTexture(targets[mode], tex[mode]);
+            const double timeStart = glfwGetTime();
+            for (int i = 0; i < numFramesPerBatch; i++) {
+                glClear(GL_COLOR_BUFFER_BIT);
+                glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+            }
+            glFinish(); // this is important so all the drawing commands have finished
+            if(batchInd >= warmupBatches)
+                time[mode] += glfwGetTime() - timeStart;
         }
-        glFinish(); // this is important so all the drawing commands have finished
-        time[mode] += glfwGetTime() - timeStart;
     }
     
-    printf("1D: %g\n2D: %g\n", time[0], time[1]);
+    printf("1D: %g seconds\n2D: %g seconds\n", time[0], time[1]);
 }
